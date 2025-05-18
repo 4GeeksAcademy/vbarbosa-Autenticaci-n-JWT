@@ -90,7 +90,7 @@ export const SignUp = () => {
 
                 <p className="mb-0 mt-3 text-end">
                     Do you have an account?
-                    <Link to="/signup" className="ms-1 text-success">
+                    <Link to="/login" className="ms-1 text-success">
                         Log in now!
                     </Link>
                 </p>
