@@ -29,20 +29,23 @@ def handle_hello():
 def signup():
     try:
         data = request.json
-        if not data["email"] or not data["password"]: 
-            raise Exception("Missing required information")
+
+        if not data["email"] or not data["password"] or not data["first_name"] or not data["last_name"]: 
+            return jsonify({"error": "Missing required information"}), 400
         
         #Check if user is registered
         stm = select(User).where(User.email==data["email"])
         user = db.session.execute(stm).scalar_one_or_none()
 
-        if user is not None:
-            return jsonify({"Error": "This email is already registered, please log in"}), 418
+        if user:
+            return jsonify({"error": "This email is already registered, please log in"}), 409
         
         #hash password to not show to others
         hashed_password = generate_password_hash(data["password"])
 
         new_user = User(
+            first_name=data["first_name"],
+            last_name=data["last_name"],
             email=data["email"],
             password=hashed_password,
             is_active=True
@@ -50,11 +53,11 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({"User created": True})
+        return jsonify({"success": True}), 201
         
     except Exception as e:
         print(e)
-        return jsonify({"Error": "Something went wrong, please try again later"})
+        return jsonify({"error": "Something went wrong, please try again later"}), 500
 
 
 
@@ -64,28 +67,28 @@ def login():
         data = request.json
 
         if not data["email"] or not data["password"]: 
-            raise Exception("Required information is missing")
+            return jsonify({"error": "Missing required information"}), 400
         
         #Check if the user has an account
-        stm = select(User).where(User.email==data["email"])
-        user = db.session.execute(stm).scalar_one_or_none()
+        stmt = select(User).where(User.email==data["email"])
+        user = db.session.execute(stmt).scalar_one_or_none()
 
-        if not user:
-            return jsonify({"error": "User not found, please sign up"}), 418
+        if user is None:
+            return jsonify({"error": "User not found, please sign up"}), 405
         
         #Check if the password matches the user
         if not check_password_hash(user.password, data["password"]):
-            return jsonify({"error": "email/contraseña no valido"}), 418
+            return jsonify({"error": "Email or password not valid"}), 401
 
        #Generate str token as it's not possible to be a number
         token = create_access_token(identity=str(user.id))
   
 
-        return jsonify({"User logged": True, "Token": token})
+        return jsonify({"success": True, "Token": token}), 200
     
     except Exception as e:
         print(e)
-        return jsonify({"Error": "Something went wrong, please try again later"})
+        return jsonify({"error": "Something went wrong, please try again later"}), 500
 
 
 #Private endpoint
@@ -98,6 +101,20 @@ def get_user_info():
     user = db.session.execute(stm).scalar_one_or_none()
     
     if not user:
-        return jsonify({"Success": False, 'Message': 'User not registered'})
+        return jsonify({"error": "User not found. Please add correct credentials or create an account"}), 405
 
-    return jsonify({"Success": True, 'User':user.serialize()})
+    return jsonify({"success": True, 'User':user.serialize()}), 200
+
+@api.route("/users/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+
+    stmt = select(User).where(User.id == user_id)
+    user = db.session.execute(stmt).scalar_one_or_none()
+
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"success": True, "message":"Account erased"}), 200

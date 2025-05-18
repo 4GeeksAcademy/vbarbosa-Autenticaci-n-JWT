@@ -13,13 +13,15 @@ userServices.signup = async (formData) => {
       },
       body: JSON.stringify(formData),
     });
-    
-    if (!resp.ok) throw Error("Something went wrong");
+
     const data = await resp.json();
+
+    if (!resp.ok) throw new Error(data.error);
+
+    console.log(data);
     return data;
 
   } catch (error) {
-    console.log(error);
     return error;
   }
 };
@@ -34,9 +36,10 @@ userServices.login = async (formData) => {
       },
       body: JSON.stringify(formData),
     });
-
-    if (!resp.ok) throw Error("Something went wrong");
     const data = await resp.json();
+
+    if (!resp.ok) throw Error(data.error);
+   
     console.log(data);
     localStorage.setItem("token", data.token)
 
@@ -49,19 +52,21 @@ userServices.login = async (formData) => {
 };
 
 //GET user information, could be profile or any other private page
-userServices.getUserInfo = async () => {
+userServices.get_user = async () => {
     try {
     const resp = await fetch(url + "/api/private", {
+        method: "GET",
         headers: {
             'Content-Type': 'application/json',
             //pass token from local storage here
             'Authorization': 'Bearer ' + localStorage.getItem("token")
         }
     });
-
-    if (!resp.ok) throw Error("Something went wrong");
     const data = await resp.json();
+
+    if (!resp.ok) throw Error(data.error);
     console.log(data);
+
     //add user data as object, we need to use JSON.stringify()
     localStorage.setItem('user', JSON.stringify(data.user))
     

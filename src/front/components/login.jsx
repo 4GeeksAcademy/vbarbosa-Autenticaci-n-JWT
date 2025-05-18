@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 //Services
 import userServices from "../services/userServices"
 
 export const LogIn = () => {
 
-    const navigate = useNavigate('/private')
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -20,13 +20,20 @@ export const LogIn = () => {
         })
     }
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        userServices.login(formData).then(data=> {
-            if (data.success) {
-                navigate
+        try {
+            const data = await userServices.login(formData);
+            
+            if (data.success){
+                console.log(data);
+                navigate("/private")
+            } else{
+                window.alert(data.message)
             }
-        })
+        } catch(error){
+            window.alert("Something happened, please try again")
+        }
     }
 
     return(
@@ -57,6 +64,13 @@ export const LogIn = () => {
                 </div>
 
                 <button type="submit" className="btn btn-primary mt-2">Log In</button>
+
+                <p className="mb-0 mt-3 text-end">
+                    Are you not registered yet?
+                    <Link to="/signup" className="ms-1 text-success">
+                        Sing up now!
+                    </Link>
+                </p>
 
             </form>          
         </div>

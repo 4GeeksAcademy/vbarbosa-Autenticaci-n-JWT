@@ -17,7 +17,9 @@ export const Home = () => {
 			const response = await fetch(backendUrl + "/api/hello")
 			const data = await response.json()
 
-			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
+			if (response.ok){
+				return "all is set"
+			}
 
 			return data
 
@@ -35,11 +37,11 @@ export const Home = () => {
 	}, [])
 
 	return (
-		<div className="container mt-5">
-			<div>
+		<div className="container-fluid m-4 text-center">
+			<div className="fs-1">
 				<Link to="/login">Login</Link>
 			</div>
-			<div>
+			<div className="fs-1">
 				<Link to="/signup">Sign Up</Link>
 			</div>
 		</div>

@@ -4,7 +4,7 @@ export const LoginPage = () => {
 
     return(
         <div className="container">
-            <h1>Log In</h1>
+            <h1 className="m-4 text-center text-info">Log In</h1>
             <LogIn />
         </div>
     )
