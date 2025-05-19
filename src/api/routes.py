@@ -104,17 +104,3 @@ def get_user_info():
         return jsonify({"success": False, 'msg': 'Something went wrong, try again.'})
 
     return jsonify({"success": True, 'user':user.serialize()})
-
-@api.route("/users/<int:user_id>", methods=["DELETE"])
-def delete_user(user_id):
-
-    stmt = select(User).where(User.id == user_id)
-    user = db.session.execute(stmt).scalar_one_or_none()
-
-    if user is None:
-        return jsonify({"error": "User not found"}), 404
-    
-    db.session.delete(user)
-    db.session.commit()
-
-    return jsonify({"success": True, "message":"Account erased"}), 200
