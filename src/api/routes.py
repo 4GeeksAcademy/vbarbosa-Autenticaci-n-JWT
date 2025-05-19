@@ -84,7 +84,7 @@ def login():
         token = create_access_token(identity=str(user.id))
   
 
-        return jsonify({"success": True, "Token": token}), 200
+        return jsonify({"success": True, "token": token}), 200
     
     except Exception as e:
         print(e)
@@ -101,9 +101,9 @@ def get_user_info():
     user = db.session.execute(stm).scalar_one_or_none()
     
     if not user:
-        return jsonify({"error": "User not found. Please add correct credentials or create an account"}), 405
+        return jsonify({"success": False, 'msg': 'Something went wrong, try again.'})
 
-    return jsonify({"success": True, 'User':user.serialize()}), 200
+    return jsonify({"success": True, 'user':user.serialize()})
 
 @api.route("/users/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
