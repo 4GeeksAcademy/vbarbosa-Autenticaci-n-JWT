@@ -37,13 +37,31 @@ export const Home = () => {
 	}, [])
 
 	return (
-		<div className="container-fluid m-4 text-center">
-			<div className="fs-1">
-				<Link to="/login">Login</Link>
+		<div className="container-fluid m-4 text-center mt-5 align-content-center">
+
+			<div className="row">
+				<div className="col-12">
+					<div className="card bg-dark text-white">
+						<img src="https://images4.alphacoders.com/270/thumb-1920-27094.jpg" 
+						className="card-img h-75 " alt="image"/>
+						<div className="card-img-overlay d-flex bg_home">
+							<Link to="/signup" className="mx-auto align-content-center">
+								<button className="btn btn-danger" type="button">Sign Up</button>
+							</Link>
+							<p className="text-light fs-4 w-50 mx-auto align-content-center">Dear client,
+								<br />
+								If you have an account please <span className="text-primary">log in</span> in order to access your profile.
+								<br />
+								Otherwise, <span className="text-danger">sing up</span> first and proceed to log in.
+							</p>
+							<Link to="/login" className="mx-auto align-content-center">
+								<button className="btn btn-primary " type="button">Log In</button>
+							</Link>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div className="fs-1">
-				<Link to="/signup">Sign Up</Link>
-			</div>
+
 		</div>
 	);
 }; 
